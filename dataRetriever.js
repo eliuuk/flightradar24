@@ -31,7 +31,7 @@ class Flight {
         this.identification = flightDetails['identification']
         this.airlineIcao = flightDetails['airline']['code']['icao'] || ""
 
-        this.callsign = flightDetails['identification']['callsign'] || airlineIcao;
+        this.callsign = flightDetails['identification']['callsign'] || this.airlineIcao;
 
         this.aircraftIcao = flightDetails['aircraft']['model']['code'];
 
@@ -113,8 +113,7 @@ function constructFlightDetailsArray(data, lowerTimestamp, upperTimestamp, airpo
             timestamp = flightDetails['time']['scheduled'][flightType]
                 || flightDetails['time']['real'][flightType]
                 || flightDetails['time']['estimated'][flightType]
-                || genericFlightTimestamp,
-            
+                || genericFlightTimestamp;            
 
         if (lowerTimestamp <= timestamp && timestamp < upperTimestamp) {
             flightDetailsArray.push(
@@ -133,7 +132,7 @@ function constructFlightDetailsArray(data, lowerTimestamp, upperTimestamp, airpo
     ]
 }
 
-function exportAirlines(departuresArray, arrivalsArray) {
+function exportAirlines(departuresArray, arrivalsArray, airportCode) {
     const forceArrayOneLine = function(key, value) {
         if (typeof value === 'object' && value.length === 3) {
             if (typeof value[0] === 'string' && typeof value[1] === 'string') {
@@ -151,7 +150,17 @@ function exportAirlines(departuresArray, arrivalsArray) {
 
     objectStringified = JSON.stringify(exportObject, forceArrayOneLine, 4)
 
-    fs.writeFile('\airlines.json', objectStringified, null)
+    if (!fs.existsSync('output')) {
+        fs.mkdirSync('output')
+    }
+
+    fs.writeFile(`output/${airportCode}.json`, objectStringified, (error) => {
+        if (error) {
+            throw new TypeError(error)
+        }
+
+        console.log(`Saved as ${airportCode}.json`)
+    })
 }
 
 function extractNeccessaryInfo(flightArray) {
@@ -189,7 +198,7 @@ function collectLikeArrays(flightArray) {
     return endArray
 }
 
-const airportCode = "ATL",
+const airportCode = "DXB",
     dateObj = new Date(),
     startTimestamp = Math.round(dateObj.setUTCHours(0, 0, 0, 0) / 1000),
     endTimestamp = startTimestamp + 86400;
@@ -200,7 +209,7 @@ let departuresArray = [],
 
 incrementPageNumber = function () {
     pageNumber++;
-    console.log(pageNumber)
+    console.log(`Retrieving page: ${pageNumber}`)
 
     const jsonRetrieved = function(parsedJson) {
         let segregatedTypes = segregateFlightTypes(parsedJson)
@@ -222,7 +231,7 @@ incrementPageNumber = function () {
             departuresArray = collectLikeArrays(extractNeccessaryInfo(departuresArray));
             arrivalsArray = collectLikeArrays(extractNeccessaryInfo(arrivalsArray));
 
-            exportAirlines(departuresArray, arrivalsArray);
+            exportAirlines(departuresArray, arrivalsArray, airportCode);
         }
     }
 
