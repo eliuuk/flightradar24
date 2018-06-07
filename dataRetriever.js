@@ -159,7 +159,7 @@ function exportAirlines(departuresArray, arrivalsArray, airportCode) {
             throw new TypeError(error)
         }
 
-        console.log(`Saved as ${airportCode}.json`)
+        console.log(`Saved as ./output/${airportCode}.json`)
     })
 }
 
