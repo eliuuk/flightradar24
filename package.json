@@ -1,14 +1,21 @@
 {
-  "name": "flightradar24",
-  "version": "1.0.0",
-  "description": "openscope tool for retrieving data from flightradar24",
-  "main": "dataRetriever.js",
-  "scripts": {
-    "retrieve": "node dataRetriever.js"
-  },
-  "author": "indianbhaji",
-  "license": "ISC",
-  "dependencies": {
-    "request": "^2.87.0"
-  }
+    "name": "flightradar24",
+    "version": "1.0.0",
+    "description": "openscope tool for retrieving data from flightradar24",
+    "main": "dataRetriever.js",
+    "scripts": {
+        "retrieve": "node dataRetriever.js",
+        "legacy": "node ./legacy/legacyRetriever.js"
+    },
+    "author": "indianbhaji",
+    "license": "ISC",
+    "dependencies": {
+        "lodash": "^4.17.10",
+        "minimist": "^1.2.0",
+        "request": "^2.87.0"
+    },
+    "devDependencies": {
+        "babel-eslint": "7.2.2",
+        "eslint": "3.19.0"
+    }
 }
